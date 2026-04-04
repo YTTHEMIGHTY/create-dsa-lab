@@ -402,8 +402,11 @@ async function executeAction(action: string, problem: ProblemFile): Promise<void
 function formatValue(val: unknown): string {
   if (val === undefined) return chalk.dim('undefined');
   if (val === null) return chalk.dim('null');
+  if (typeof val === 'function') return chalk.magenta(`[Function: ${val.name || 'anonymous'}]`);
   try {
-    const str = JSON.stringify(val);
+    const str = JSON.stringify(val, (_key, v) =>
+      typeof v === 'function' ? `[Function: ${v.name || 'anonymous'}]` : v
+    );
     return str.length > 80 ? str.slice(0, 77) + '...' : str;
   } catch {
     return String(val);
