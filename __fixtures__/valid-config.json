@@ -1,0 +1,10 @@
+{
+  "lab": { "name": "test-lab", "author": "Test User" },
+  "features": { "excalidraw": true, "notesServer": true, "benchmarker": true, "testing": true },
+  "categories": [
+    { "prefix": "lc", "folder": "leetcode", "label": "🏆 LeetCode" },
+    { "prefix": "algo", "folder": "algorithms", "label": "🔬 Algorithms" }
+  ],
+  "notesServer": { "port": 4040 },
+  "benchmark": { "iterations": 50 }
+}
