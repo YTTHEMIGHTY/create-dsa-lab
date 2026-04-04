@@ -1,0 +1,5 @@
+node_modules/
+__fixtures__/test-output/
+coverage/
+*.tgz
+.DS_Store
