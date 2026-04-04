@@ -126,7 +126,7 @@ async function pickProblem(problems: ProblemFile[]): Promise<ProblemFile | null>
     name: 'index',
     message: 'Select a problem:',
     choices: choices.filter(c => c.value !== -1),
-    suggest: (input: string, choices: { title: string; value: number }[]) => {
+    suggest: (input, choices) => {
       const lower = input.toLowerCase();
       return Promise.resolve(choices.filter(c => c.title.toLowerCase().includes(lower)));
     },

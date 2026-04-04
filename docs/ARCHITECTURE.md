@@ -1,5 +1,12 @@
 # Architecture — create-dsa-lab
 
+> **📖 Full Documentation Index:**
+> - [HOW_IT_WORKS.md](./HOW_IT_WORKS.md) — End-to-end flow diagrams (scaffolding → daily usage)
+> - [DESIGN_DECISIONS.md](./DESIGN_DECISIONS.md) — Why every non-obvious choice was made
+> - [FILE_REFERENCE.md](./FILE_REFERENCE.md) — What every file does, who imports it
+> - [DEVELOPMENT.md](./DEVELOPMENT.md) — Setup, testing, releasing, publishing
+> - [CHANGELOG.md](./CHANGELOG.md) — Version history
+
 ## High-Level Overview
 
 ```
