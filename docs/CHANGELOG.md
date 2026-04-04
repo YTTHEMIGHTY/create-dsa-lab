@@ -1,0 +1,47 @@
+# Changelog
+
+All notable changes documented here. Follows [SemVer](https://semver.org).
+
+## [1.0.0] — 2026-04-04
+
+### 🎉 Initial Release
+
+#### CLI (`bin/cli.js`)
+- Interactive scaffolding with `npx create-dsa-lab`
+- Configurable categories (6 built-in)
+- Optional Excalidraw support
+- Auto `npm install` and `git init`
+- Graceful Ctrl+C handling
+
+#### Dashboard (`scripts/dashboard.ts`)
+- Interactive problem selector with fuzzy search
+- Run / Test / Benchmark / Notes actions
+- File watcher — auto re-run on save
+- Property-existence check for `sampleOutput`
+- Benchmark: warm-up + N iterations, memory delta, formatted table
+
+#### Generator (`scripts/generate.ts`)
+- `npm run make <type> <name>` scaffolds problem directory
+- Auto-generated `meta` export
+- Co-located `.test.ts` and `.md` files
+- Input validation regex
+
+#### Config System (`scripts/config.ts`)
+- `dsa-lab.config.json` with deep merge defaults
+- Hybrid discovery (config + filesystem scan)
+- Feature flags: excalidraw, notesServer, benchmarker, testing
+
+#### Error Handling (`scripts/errors.ts`)
+- `DsaLabError` class (message, suggestion, code)
+- 16 error codes
+- Centralized `handleError()` and `warn()`
+
+#### Notes Server (`scripts/serve-notes.ts`)
+- Express + marked + highlight.js + KaTeX
+- Searchable sidebar, dark theme, mobile responsive
+
+#### Infrastructure
+- ESM, TypeScript strict mode
+- 5 test files, 2 fixtures
+- GitHub Actions CI/CD
+- MIT License
