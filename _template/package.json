@@ -16,6 +16,7 @@
     "@types/jest": "^30.0.0",
     "@types/marked": "^5.0.2",
     "@types/node": "^25.0.3",
+    "@types/prompts": "^2.4.9",
     "chalk": "^5.4.1",
     "chokidar": "^4.0.3",
     "cli-table3": "^0.6.5",
