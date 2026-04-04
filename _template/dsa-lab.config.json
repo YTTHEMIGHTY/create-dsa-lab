@@ -1,0 +1,26 @@
+{
+  "lab": {
+    "name": "my-dsa-lab",
+    "author": ""
+  },
+  "features": {
+    "excalidraw": false,
+    "notesServer": true,
+    "benchmarker": true,
+    "testing": true
+  },
+  "categories": [
+    { "prefix": "p", "folder": "patterns", "label": "\ud83e\udde9 Patterns" },
+    { "prefix": "ds", "folder": "dataStructures", "label": "\ud83d\udce6 Data Structures" },
+    { "prefix": "algo", "folder": "algorithms", "label": "\ud83d\udd2c Algorithms" },
+    { "prefix": "b", "folder": "blind", "label": "\ud83e\udd11 Blind" },
+    { "prefix": "lc", "folder": "leetcode", "label": "\ud83c\udfc6 LeetCode" },
+    { "prefix": "pg", "folder": "playground", "label": "\ud83c\udfae Playground" }
+  ],
+  "notesServer": {
+    "port": 3030
+  },
+  "benchmark": {
+    "iterations": 100
+  }
+}
