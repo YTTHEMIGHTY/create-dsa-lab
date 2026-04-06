@@ -141,6 +141,15 @@ npm run notes
 
 Renders your `.md` notes with syntax highlighting, KaTeX math, and a searchable sidebar.
 
+### Keeping Your Lab Updated
+
+If a new version of `create-dsa-lab` is released, you can pull the latest scripts and dashboard features into your existing project without touching your `src/`, config, or answers. From inside your project folder:
+
+```bash
+npx create-dsa-lab@latest update
+```
+*(This safely replaces `scripts/` and `templates/` and merges any new package dependencies)*
+
 ---
 
 ## 📁 What Gets Generated
