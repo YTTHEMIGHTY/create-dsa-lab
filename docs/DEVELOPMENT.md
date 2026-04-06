@@ -53,39 +53,41 @@ rm -rf test-project
 
 ## Version Control & Releases
 
-### Semantic Versioning
+We use a custom, automated release script (`scripts/release.js`) that manages `package.json` bumping, extracting Unreleased changelog notes into timestamped files, and automatically tagging/pushing to Git. 
 
-| Change | Command | Example |
-|:--|:--|:--|
-| Bug fix | `npm version patch` | 1.0.0 → 1.0.1 |
-| New feature | `npm version minor` | 1.0.0 → 1.1.0 |
-| Breaking change | `npm version major` | 1.0.0 → 2.0.0 |
+### The Perfect Release Workflow
 
-`npm version` automatically: updates package.json, creates git commit, creates git tag.
+To ensure that the tagged release perfectly targets your `main` branch, follow this sequence:
 
-### Release Workflow
-
+#### 1. Develop your feature
 ```bash
-# 1. Make changes + commit
-git add . && git commit -m "feat: add new feature"
-
-# 2. Bump version
-npm version minor
-
-# 3. Push code + tags
-git push origin main && git push --tags
-
-# 4. Create GitHub Release
-#    → github.com/YTTHEMIGHTY/create-dsa-lab/releases
-#    → Draft new release → pick tag → Publish
-#    → GitHub Actions auto-publishes to npm!
+git checkout -b feat/my-new-feature
+# ... make your code changes ...
+git add .
+git commit -m "feat: my new feature"
+git push -u origin feat/my-new-feature
 ```
 
-### Manual publish (alternative)
+#### 2. Merge to Main
+- Open a Pull Request from your branch to `main` on GitHub.
+- Review and **Merge** the PR.
+
+#### 3. Trigger the Release (Local)
+Pull down the updated `main` branch locally, and explicitly run our release helper.
 ```bash
-npm version patch
-npm publish --access public
+git checkout main
+git pull origin main
+
+# Run the automated release tool
+npm run release
 ```
+*The script will ask you for the bump type (patch, minor, major), migrate your `unreleased.md` notes to a timestamped file, bump your version, tag the commit, and push it to GitHub automatically!*
+
+#### 4. Trigger NPM Publish (GitHub)
+- Go to [Releases on GitHub](https://github.com/YTTHEMIGHTY/create-dsa-lab/releases)
+- Click **Draft a new release**
+- Select the `vX.Y.Z` tag that our script just pushed.
+- Publish! The `publish.yml` GitHub Action will automatically grab the new tagged code and blast it to NPM.
 
 ## Publishing to npm
 

@@ -27,7 +27,11 @@ const program = new Command();
 program
   .name('create-dsa-lab')
   .description('Scaffold a zero-config, test-driven DSA laboratory')
-  .version(pkg.version)
+  .version(pkg.version);
+
+program
+  .command('init', { isDefault: true })
+  .description('Scaffold a new DSA lab')
   .argument('[project-name]', 'Name for your DSA lab')
   .action(async (projectName) => {
     try {
@@ -37,6 +41,18 @@ program
         console.log(chalk.dim('\n  Cancelled. No files were created.\n'));
         process.exit(0);
       }
+      console.error(chalk.red(`\n  ✖ ${err instanceof Error ? err.message : String(err)}\n`));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('update')
+  .description('Update an existing DSA lab to the latest core scripts')
+  .action(async () => {
+    try {
+      await runUpdate();
+    } catch (err) {
       console.error(chalk.red(`\n  ✖ ${err instanceof Error ? err.message : String(err)}\n`));
       process.exit(1);
     }
@@ -156,5 +172,77 @@ function printSuccess(name) {
   console.log(`     ${chalk.cyan('npm run notes')}               ${chalk.dim('# start the notes server')}`);
   console.log('');
   console.log(chalk.dim('  Happy coding! 🎯'));
+  console.log('');
+}
+
+async function runUpdate() {
+  printBanner();
+
+  const cwd = process.cwd();
+  const configPath = path.join(cwd, 'dsa-lab.config.json');
+  
+  if (!fs.existsSync(configPath)) {
+    throw new Error('Not inside a valid DSA Lab. Make sure you are in the project root containing dsa-lab.config.json');
+  }
+
+  console.log(chalk.cyan('  Updating core scripts...\n'));
+
+  // 1. Copy folders
+  const foldersToUpdate = ['scripts', 'templates'];
+  for (const folder of foldersToUpdate) {
+    const srcPath = path.join(TEMPLATE_DIR, folder);
+    const destPath = path.join(cwd, folder);
+    
+    if (fs.existsSync(srcPath)) {
+      if (fs.existsSync(destPath)) {
+        fs.rmSync(destPath, { recursive: true, force: true });
+      }
+      fs.cpSync(srcPath, destPath, { recursive: true });
+      console.log(chalk.dim(`  ✔ Updated /${folder}`));
+    }
+  }
+
+  // 2. Merge dependencies
+  const userPkgPath = path.join(cwd, 'package.json');
+  const templatePkgPath = path.join(TEMPLATE_DIR, 'package.json');
+  
+  let depsMerged = false;
+  if (fs.existsSync(userPkgPath) && fs.existsSync(templatePkgPath)) {
+    const userPkg = JSON.parse(fs.readFileSync(userPkgPath, 'utf-8'));
+    const tempPkg = JSON.parse(fs.readFileSync(templatePkgPath, 'utf-8'));
+    
+    if (tempPkg.dependencies) {
+      userPkg.dependencies = userPkg.dependencies || {};
+      for (const [dep, ver] of Object.entries(tempPkg.dependencies)) {
+        if (!userPkg.dependencies[dep]) {
+          userPkg.dependencies[dep] = ver;
+          depsMerged = true;
+          console.log(chalk.dim(`  ✔ Added build dependency: ${dep}`));
+        }
+      }
+    }
+    
+    if (tempPkg.devDependencies) {
+      userPkg.devDependencies = userPkg.devDependencies || {};
+      for (const [dep, ver] of Object.entries(tempPkg.devDependencies)) {
+        if (!userPkg.devDependencies[dep]) {
+          userPkg.devDependencies[dep] = ver;
+          depsMerged = true;
+          console.log(chalk.dim(`  ✔ Added devDependency: ${dep}`));
+        }
+      }
+    }
+    
+    if (depsMerged) {
+      fs.writeFileSync(userPkgPath, JSON.stringify(userPkg, null, 2) + '\n');
+    }
+  }
+
+  console.log('');
+  console.log(chalk.bold.green('  🚀 Successfully updated DSA Lab core scripts!'));
+  if (depsMerged) {
+    console.log(chalk.yellow('  ⚠ New dependencies were added. Please run:'));
+    console.log(`     ${chalk.cyan('npm install')}`);
+  }
   console.log('');
 }
