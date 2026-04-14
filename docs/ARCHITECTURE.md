@@ -12,11 +12,14 @@
 ```
 create-dsa-lab (npm package)
 ├── bin/cli.js          ← Entry point (npx create-dsa-lab runs this)
-│   └── Prompts user → Copies _template/ → Customizes config
-└── _template/          ← Copied to user's project
-    ├── scripts/        ← Dashboard, generator, config, errors, notes server
-    ├── src/            ← Empty category folders
-    └── config files    ← package.json, tsconfig, jest, dsa-lab.config
+│   ├── init command    → Prompts user → Copies _template/ → Customizes config
+│   └── update command  → Smart file-level sync with .bak backups (--dry-run)
+├── _template/          ← Copied to user's project
+│   ├── scripts/        ← Dashboard, generator, config, errors, notes server
+│   ├── src/            ← Category folders + bundled sample problem
+│   └── config files    ← package.json, tsconfig, jest, dsa-lab.config
+├── .agents/            ← AI agent knowledge base and rules
+└── docs/               ← Architecture, design decisions, development guide
 ```
 
 ## Two-Repo Strategy
@@ -44,6 +47,18 @@ create-dsa-lab (npm package)
 | `config.ts` | imported by others | Loads dsa-lab.config.json + discovers folders in src/ |
 | `errors.ts` | imported by others | DsaLabError class with message, suggestion, code |
 | `serve-notes.ts` | `npm run notes` | Express server rendering markdown notes |
+
+## Smart Update (v1.2.0+)
+
+The `update` command uses file-level diffing instead of folder replacement:
+- `walkDir()` recursively enumerates template files
+- `smartSync()` compares content, skips unchanged, backs up changed
+- `--dry-run` flag previews without writing
+- All template scripts carry `// @version X.Y.Z` stamps
+
+## Bundled Sample Problem
+
+A complete "Container With Most Water" (LeetCode #11) is included at `src/leetcode/containerWithMostWater_11/` so new users see the dashboard working immediately after scaffolding.
 
 ## Hybrid Discovery
 

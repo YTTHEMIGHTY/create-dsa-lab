@@ -1,3 +1,4 @@
+// @version 1.2.0
 /**
  * ─── DSA Lab — Unified Dashboard ──────────────────────────────
  *
@@ -91,11 +92,16 @@ function scanProblems(): ProblemFile[] {
 // ─── File Picker ──────────────────────────────────────────────
 async function pickProblem(problems: ProblemFile[]): Promise<ProblemFile | null> {
   if (problems.length === 0) {
-    throw new DsaLabError(
-      'No problem files found in src/.',
-      'Run "npm run make lc twoSum_1" to create your first problem.',
-      ErrorCodes.EMPTY_SRC
-    );
+    console.log(chalk.yellow('\n  📭 No problem files found in src/.\n'));
+    console.log(chalk.dim('  Get started by scaffolding your first problem:\n'));
+    console.log(`     ${chalk.cyan('npm run make lc twoSum_1')}       ${chalk.dim('# LeetCode problem')}`);
+    console.log(`     ${chalk.cyan('npm run make algo mergeSort')}    ${chalk.dim('# Algorithm')}`);
+    console.log(`     ${chalk.cyan('npm run make ds linkedList')}     ${chalk.dim('# Data Structure')}`);
+    console.log(`     ${chalk.cyan('npm run make p slidingWindow')}   ${chalk.dim('# Pattern')}`);
+    console.log('');
+    console.log(chalk.dim('  After creating a problem, run npm start again.'));
+    console.log('');
+    process.exit(0);
   }
 
   const grouped = new Map<string, ProblemFile[]>();
@@ -120,15 +126,18 @@ async function pickProblem(problems: ProblemFile[]): Promise<ProblemFile | null>
   }
 
   const flatProblems = [...problems];
+  const filteredChoices = choices.filter(c => c.value !== -1);
 
   const res = await prompts({
     type: 'autocomplete',
     name: 'index',
     message: 'Select a problem:',
-    choices: choices.filter(c => c.value !== -1),
-    suggest: (input, choices) => {
+    choices: filteredChoices,
+    suggest: (input: string, choices: { title: string; value: number; description?: string }[]) => {
       const lower = input.toLowerCase();
-      return Promise.resolve(choices.filter(c => c.title.toLowerCase().includes(lower)));
+      return Promise.resolve(
+        choices.filter((c: { title: string }) => c.title.toLowerCase().includes(lower))
+      );
     },
   }, { onCancel: () => process.exit(0) });
 

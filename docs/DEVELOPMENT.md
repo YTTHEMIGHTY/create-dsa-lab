@@ -51,6 +51,24 @@ npm unlink -g create-dsa-lab
 rm -rf test-project
 ```
 
+## Smoke Testing Template Changes
+
+For changes to `_template/`, always verify with a real scaffolded project:
+
+```bash
+# 1. Create a smoke test lab
+mkdir _smoke_test && cp -r _template/* _smoke_test/
+cd _smoke_test && npm install
+
+# 2. Verify everything works
+npm start           # dashboard should show sample problem
+npm run notes       # notes server at localhost:3030
+npm run make lc twoSum_1   # scaffold a new problem
+
+# 3. Clean up (_smoke_test/ is gitignored)
+cd .. && rm -rf _smoke_test
+```
+
 ## Version Control & Releases
 
 We use a custom, automated release script (`scripts/release.js`) that manages `package.json` bumping, extracting Unreleased changelog notes into timestamped files, and automatically tagging/pushing to Git. 

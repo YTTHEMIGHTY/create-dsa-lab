@@ -5,7 +5,7 @@
 ## ⚡ Quick Start
 
 ```bash
-# Launch the interactive dashboard
+# Launch the interactive dashboard (a sample problem is included!)
 npm start
 
 # Scaffold a new problem
@@ -14,6 +14,9 @@ npm run make lc twoSum_1
 # Start the notes server
 npm run notes
 ```
+
+> 💡 **Tip:** A sample problem (Container With Most Water, LeetCode #11) is pre-installed.
+> Run `npm start` right away to see the dashboard in action!
 
 ## 📋 Commands
 
@@ -54,7 +57,8 @@ src/
 │       ├── <name>.test.ts      ← Co-located tests
 │       └── <name>.md           ← Notes
 ├── dataStructures/   ← Linked lists, trees, etc.
-├── leetcode/         ← LeetCode problems
+├── leetcode/         ← LeetCode problems (includes sample!)
+│   └── containerWithMostWater_11/
 ├── patterns/         ← Problem-solving patterns
 ├── blind/            ← Curated blind list
 └── playground/       ← Experiments & practice

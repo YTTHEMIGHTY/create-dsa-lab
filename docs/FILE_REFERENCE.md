@@ -26,7 +26,10 @@
 7. Prints a getting-started guide
 
 **Key functions:**
-- `run(projectName)` — Main orchestrator
+- `run(projectName)` — Main scaffolding orchestrator
+- `runUpdate(dryRun)` — Smart update with file-level diffing
+- `smartSync(srcRoot, destRoot, folderName, dryRun)` — File-level sync with .bak backups
+- `walkDir(dir)` — Recursive file enumerator
 - `printBanner()` — ASCII art header
 - `printSuccess(name)` — Post-setup instructions
 
@@ -215,11 +218,12 @@ Key scripts:
 
 | File | What it tests |
 |:--|:--|
-| `cli.test.js` | End-to-end: scaffolds a project into `__fixtures__/`, verifies file structure |
+| `cli.test.js` | End-to-end: scaffolds a project, verifies file structure, sample problem, --dry-run flag |
 | `config.test.js` | Config loading, deep merge, defaults |
 | `errors.test.js` | DsaLabError class, handleError output, warn output |
 | `generator.test.js` | File generation, validation, name regex |
 | `scanner.test.js` | Problem scanning, directory traversal, filtering |
+| `sample-problem.test.js` | Bundled sample problem structure, content quality, @version stamps |
 
 Run with: `npm test` (uses Jest with `--experimental-vm-modules` for ESM).
 

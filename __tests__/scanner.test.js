@@ -26,7 +26,7 @@ describe('Scanner', () => {
     const result = [...configCategories];
     for (const dir of fsDirs) {
       if (!configuredFolders.has(dir)) {
-        result.push({ prefix: dir.slice(0, 2), folder: dir, label: `\ud83d\udcc1 ${dir}` });
+        result.push({ prefix: dir.slice(0, 2), folder: dir, label: `📁 ${dir}` });
       }
     }
     expect(result.length).toBe(3);

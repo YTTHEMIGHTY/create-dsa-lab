@@ -1,3 +1,4 @@
+// @version 1.2.0
 import fs from 'fs';
 import path from 'path';
 import { DsaLabError, ErrorCodes, warn } from './errors.ts';
@@ -20,12 +21,12 @@ const DEFAULTS: DsaLabConfig = {
   lab: { name: 'my-dsa-lab', author: '' },
   features: { excalidraw: false, notesServer: true, benchmarker: true, testing: true },
   categories: [
-    { prefix: 'p', folder: 'patterns', label: '\ud83e\udde9 Patterns' },
-    { prefix: 'ds', folder: 'dataStructures', label: '\ud83d\udce6 Data Structures' },
-    { prefix: 'algo', folder: 'algorithms', label: '\ud83d\udd2c Algorithms' },
-    { prefix: 'b', folder: 'blind', label: '\ud83e\udd11 Blind' },
-    { prefix: 'lc', folder: 'leetcode', label: '\ud83c\udfc6 LeetCode' },
-    { prefix: 'pg', folder: 'playground', label: '\ud83c\udfae Playground' },
+    { prefix: 'p', folder: 'patterns', label: '🧩 Patterns' },
+    { prefix: 'ds', folder: 'dataStructures', label: '📦 Data Structures' },
+    { prefix: 'algo', folder: 'algorithms', label: '🔬 Algorithms' },
+    { prefix: 'b', folder: 'blind', label: '🤑 Blind' },
+    { prefix: 'lc', folder: 'leetcode', label: '🏆 LeetCode' },
+    { prefix: 'pg', folder: 'playground', label: '🎮 Playground' },
   ],
   notesServer: { port: 3030 },
   benchmark: { iterations: 100 },
@@ -52,7 +53,7 @@ function deepMerge(defaults: DsaLabConfig, overrides: Record<string, unknown>): 
 
 export function loadConfig(): DsaLabConfig {
   if (!fs.existsSync(CONFIG_PATH)) {
-    warn('dsa-lab.config.json not found \u2014 using defaults.');
+    warn('dsa-lab.config.json not found — using defaults.');
     return { ...DEFAULTS };
   }
   try {
@@ -85,7 +86,7 @@ export function discoverCategories(cfg?: DsaLabConfig): CategoryConfig[] {
         .filter(d => d.isDirectory() && !d.name.startsWith('.'));
       for (const dir of dirs) {
         if (!configuredFolders.has(dir.name)) {
-          result.push({ prefix: dir.name.slice(0, 2).toLowerCase(), folder: dir.name, label: `\ud83d\udcc1 ${dir.name}` });
+          result.push({ prefix: dir.name.slice(0, 2).toLowerCase(), folder: dir.name, label: `📁 ${dir.name}` });
         }
       }
     } catch { /* ignore */ }
