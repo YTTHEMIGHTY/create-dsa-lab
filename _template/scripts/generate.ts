@@ -1,3 +1,4 @@
+// @version 1.2.0
 /**
  * ─── DSA Lab — Problem Scaffolder ─────────────────────────────
  *

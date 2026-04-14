@@ -1,3 +1,4 @@
+// @version 1.2.0
 import chalk from 'chalk';
 
 export const ErrorCodes = {
@@ -37,18 +38,18 @@ export class DsaLabError extends Error {
 export function handleError(error: unknown, exitProcess = true): void {
   if (error instanceof DsaLabError) {
     console.error('');
-    console.error(chalk.red(`  \u2716 ${error.message}`));
-    console.error(chalk.dim(`    \u2192 ${error.suggestion}`));
+    console.error(chalk.red(`  ✖ ${error.message}`));
+    console.error(chalk.dim(`    → ${error.suggestion}`));
     console.error(chalk.dim(`    (${error.code})`));
     console.error('');
   } else if (error instanceof SyntaxError) {
     console.error('');
-    console.error(chalk.red('  \u2716 Syntax error in your code:'));
+    console.error(chalk.red('  ✖ Syntax error in your code:'));
     console.error(chalk.dim(`    ${error.message}`));
     console.error('');
   } else if (error instanceof Error) {
     console.error('');
-    console.error(chalk.red(`  \u2716 ${error.message}`));
+    console.error(chalk.red(`  ✖ ${error.message}`));
     if (error.stack) {
       const stackLines = error.stack.split('\n').slice(1, 4);
       for (const line of stackLines) {
@@ -58,7 +59,7 @@ export function handleError(error: unknown, exitProcess = true): void {
     console.error('');
   } else {
     console.error('');
-    console.error(chalk.red('  \u2716 An unexpected error occurred:'));
+    console.error(chalk.red('  ✖ An unexpected error occurred:'));
     console.error(chalk.dim(`    ${String(error)}`));
     console.error('');
   }
@@ -67,6 +68,6 @@ export function handleError(error: unknown, exitProcess = true): void {
 }
 
 export function warn(message: string, suggestion?: string): void {
-  console.warn(chalk.yellow(`  \u26a0 ${message}`));
-  if (suggestion) console.warn(chalk.dim(`    \u2192 ${suggestion}`));
+  console.warn(chalk.yellow(`  ⚠ ${message}`));
+  if (suggestion) console.warn(chalk.dim(`    → ${suggestion}`));
 }

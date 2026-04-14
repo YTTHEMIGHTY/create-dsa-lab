@@ -1,5 +1,6 @@
 node_modules/
 __fixtures__/test-output/
 coverage/
+_smoke_test/
 *.tgz
 .DS_Store

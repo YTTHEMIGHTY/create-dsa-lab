@@ -1,5 +1,33 @@
-### ✨ Features
-- 
+# v1.2.0 (Unreleased)
 
-### 🐞 Bug Fixes
-- 
+## 🐛 Bug Fixes
+
+- **Smart `update` command**: The `update` command now compares files individually instead of replacing the entire `scripts/` folder. Only changed files are overwritten. (#4)
+- **`.bak` backups**: Before overwriting a changed file during `update`, a `.bak` backup is created so users can diff manually.
+- **Fix dashboard test selection**: Fixed the `prompts` autocomplete suggest callback that caused test selection to fail after `npm run start`. (#4)
+- **Unicode → real emojis**: Replaced all `\ud83e\udde9`-style Unicode escape sequences with actual emoji characters in `config.ts`, `errors.ts`, `dsa-lab.config.json`, and test fixtures.
+
+## ✨ New Features
+
+- **Bundled sample problem**: A complete "Container With Most Water" (LeetCode #11) problem is now included in the template so users see the dashboard working immediately after `npx create-dsa-lab`.
+- **`update --dry-run` flag**: Preview what would change during an update without writing any files.
+- **Version stamps**: All template scripts now include `// @version` comments for easier tracking of changes across releases.
+- **Friendly empty-state UX**: Instead of throwing an error when `src/` is empty, the dashboard now shows a helpful welcome message with `npm run make` instructions.
+
+## 📖 Documentation
+
+- **README.md rewrite**: Complete overhaul with "sell first" approach — emotional hook, 30-second quickstart, terminal demo, feature grid, and cleaner structure.
+- **CONTRIBUTING.md**: New comprehensive contributor guide with dev setup, testing guidelines, and PR process.
+- **CODE_OF_CONDUCT.md**: Contributor Covenant v2.1.
+- **SECURITY.md**: Security policy with vulnerability reporting via GitHub Security Advisories.
+- **Issue templates**: Bug report and feature request templates for GitHub Issues.
+- **PR template**: Pull request template with type, testing checklist, and conventions.
+- **Agent knowledge**: `.agents/knowledge/project-overview.md` and `.agents/knowledge/conventions.md` for AI-assisted development.
+- **Agent rules**: `.agents/rules/core-behaviour.md` with credit-saving patterns and fast paths.
+- Updated `docs/ARCHITECTURE.md`, `docs/FILE_REFERENCE.md`, `docs/DEVELOPMENT.md` with v1.2.0 changes.
+- Updated template `README.md` with sample problem quick start.
+
+## 🔒 Supply Chain Security
+
+- **Pinned GitHub Actions**: `actions/checkout` and `actions/setup-node` pinned to immutable SHA hashes (defense against compromised version tags).
+- **Provenance**: `npm publish --provenance` already configured — v1.2.0 will be the first release with npm provenance attestation.

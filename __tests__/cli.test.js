@@ -52,4 +52,17 @@ describe('CLI Scaffolder', () => {
     expect(pkg.scripts.notes).toContain('serve-notes');
     expect(pkg.type).toBe('module');
   });
+
+  test('template should include bundled sample problem', () => {
+    const sampleDir = path.join(__dirname, '..', '_template', 'src', 'leetcode', 'containerWithMostWater_11');
+    expect(fs.existsSync(sampleDir)).toBe(true);
+    expect(fs.existsSync(path.join(sampleDir, 'containerWithMostWater_11.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(sampleDir, 'containerWithMostWater_11.test.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(sampleDir, 'containerWithMostWater_11.md'))).toBe(true);
+  });
+
+  test('update command should support --dry-run flag', () => {
+    const result = execSync(`node ${CLI_PATH} update --help`, { encoding: 'utf-8' });
+    expect(result).toContain('--dry-run');
+  });
 });

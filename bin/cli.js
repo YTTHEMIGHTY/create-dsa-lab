@@ -49,9 +49,10 @@ program
 program
   .command('update')
   .description('Update an existing DSA lab to the latest core scripts')
-  .action(async () => {
+  .option('--dry-run', 'Show what would change without writing any files')
+  .action(async (options) => {
     try {
-      await runUpdate();
+      await runUpdate(options.dryRun || false);
     } catch (err) {
       console.error(chalk.red(`\n  ✖ ${err instanceof Error ? err.message : String(err)}\n`));
       process.exit(1);
@@ -167,15 +168,85 @@ function printSuccess(name) {
   console.log('');
   console.log(chalk.dim('  Getting Started:'));
   console.log(`     ${chalk.cyan(`cd ${name}`)}`);
-  console.log(`     ${chalk.cyan('npm run make lc twoSum_1')}    ${chalk.dim('# scaffold a problem')}`);
-  console.log(`     ${chalk.cyan('npm start')}                   ${chalk.dim('# launch the dashboard')}`);
+  console.log(`     ${chalk.cyan('npm start')}                   ${chalk.dim('# launch the dashboard (sample included!)')}`);
+  console.log(`     ${chalk.cyan('npm run make lc twoSum_1')}    ${chalk.dim('# scaffold a new problem')}`);
   console.log(`     ${chalk.cyan('npm run notes')}               ${chalk.dim('# start the notes server')}`);
   console.log('');
-  console.log(chalk.dim('  Happy coding! 🎯'));
+  console.log(chalk.dim('  A sample problem (Container With Most Water) is included to get you started! 🎯'));
   console.log('');
 }
 
-async function runUpdate() {
+// ─── Smart Sync ───────────────────────────────────────────────
+function walkDir(dir) {
+  const results = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...walkDir(fullPath));
+    } else {
+      results.push(fullPath);
+    }
+  }
+  return results;
+}
+
+function smartSync(srcRoot, destRoot, folderName, dryRun) {
+  if (!fs.existsSync(srcRoot)) return;
+
+  const srcFiles = walkDir(srcRoot);
+  let updated = 0;
+  let skipped = 0;
+  let added = 0;
+
+  for (const srcFile of srcFiles) {
+    const relativePath = path.relative(srcRoot, srcFile);
+    const destFile = path.join(destRoot, relativePath);
+    const srcContent = fs.readFileSync(srcFile, 'utf-8');
+
+    if (fs.existsSync(destFile)) {
+      const destContent = fs.readFileSync(destFile, 'utf-8');
+      if (srcContent === destContent) {
+        skipped++;
+        console.log(chalk.dim(`  ⊘ Unchanged: ${folderName}/${relativePath}`));
+        continue;
+      }
+
+      if (dryRun) {
+        console.log(chalk.yellow(`  ~ Would update: ${folderName}/${relativePath}`));
+        updated++;
+        continue;
+      }
+
+      // Create .bak backup before overwriting
+      const bakPath = destFile + '.bak';
+      fs.copyFileSync(destFile, bakPath);
+      console.log(chalk.dim(`  📋 Backed up: ${folderName}/${relativePath} → .bak`));
+
+      fs.writeFileSync(destFile, srcContent);
+      console.log(chalk.green(`  ✔ Updated: ${folderName}/${relativePath}`));
+      updated++;
+    } else {
+      if (dryRun) {
+        console.log(chalk.blue(`  + Would add: ${folderName}/${relativePath}`));
+        added++;
+        continue;
+      }
+
+      fs.mkdirSync(path.dirname(destFile), { recursive: true });
+      fs.writeFileSync(destFile, srcContent);
+      console.log(chalk.green(`  ✔ Added: ${folderName}/${relativePath}`));
+      added++;
+    }
+  }
+
+  if (updated === 0 && added === 0) {
+    console.log(chalk.dim(`  ✔ ${folderName}/ is already up to date (${skipped} files)`));
+  } else {
+    console.log(chalk.dim(`  → ${folderName}/: ${updated} updated, ${added} new, ${skipped} unchanged`));
+  }
+}
+
+async function runUpdate(dryRun = false) {
   printBanner();
 
   const cwd = process.cwd();
@@ -185,64 +256,72 @@ async function runUpdate() {
     throw new Error('Not inside a valid DSA Lab. Make sure you are in the project root containing dsa-lab.config.json');
   }
 
-  console.log(chalk.cyan('  Updating core scripts...\n'));
+  if (dryRun) {
+    console.log(chalk.yellow('  🔍 Dry run mode — no files will be modified\n'));
+  } else {
+    console.log(chalk.cyan('  Updating core scripts...\n'));
+  }
 
-  // 1. Copy folders
-  const foldersToUpdate = ['scripts', 'templates'];
+  // 1. Smart-sync folders (only update changed files, with .bak backups)
+  const foldersToUpdate = ['scripts'];
+  // Also sync templates subfolder within scripts
+  const scriptsTemplatesDir = path.join(TEMPLATE_DIR, 'scripts', 'templates');
+  
   for (const folder of foldersToUpdate) {
     const srcPath = path.join(TEMPLATE_DIR, folder);
     const destPath = path.join(cwd, folder);
-    
-    if (fs.existsSync(srcPath)) {
-      if (fs.existsSync(destPath)) {
-        fs.rmSync(destPath, { recursive: true, force: true });
-      }
-      fs.cpSync(srcPath, destPath, { recursive: true });
-      console.log(chalk.dim(`  ✔ Updated /${folder}`));
-    }
+    smartSync(srcPath, destPath, folder, dryRun);
   }
 
   // 2. Merge dependencies
-  const userPkgPath = path.join(cwd, 'package.json');
-  const templatePkgPath = path.join(TEMPLATE_DIR, 'package.json');
-  
-  let depsMerged = false;
-  if (fs.existsSync(userPkgPath) && fs.existsSync(templatePkgPath)) {
-    const userPkg = JSON.parse(fs.readFileSync(userPkgPath, 'utf-8'));
-    const tempPkg = JSON.parse(fs.readFileSync(templatePkgPath, 'utf-8'));
+  if (!dryRun) {
+    const userPkgPath = path.join(cwd, 'package.json');
+    const templatePkgPath = path.join(TEMPLATE_DIR, 'package.json');
     
-    if (tempPkg.dependencies) {
-      userPkg.dependencies = userPkg.dependencies || {};
-      for (const [dep, ver] of Object.entries(tempPkg.dependencies)) {
-        if (!userPkg.dependencies[dep]) {
-          userPkg.dependencies[dep] = ver;
-          depsMerged = true;
-          console.log(chalk.dim(`  ✔ Added build dependency: ${dep}`));
+    let depsMerged = false;
+    if (fs.existsSync(userPkgPath) && fs.existsSync(templatePkgPath)) {
+      const userPkg = JSON.parse(fs.readFileSync(userPkgPath, 'utf-8'));
+      const tempPkg = JSON.parse(fs.readFileSync(templatePkgPath, 'utf-8'));
+      
+      if (tempPkg.dependencies) {
+        userPkg.dependencies = userPkg.dependencies || {};
+        for (const [dep, ver] of Object.entries(tempPkg.dependencies)) {
+          if (!userPkg.dependencies[dep]) {
+            userPkg.dependencies[dep] = ver;
+            depsMerged = true;
+            console.log(chalk.dim(`  ✔ Added build dependency: ${dep}`));
+          }
         }
       }
-    }
-    
-    if (tempPkg.devDependencies) {
-      userPkg.devDependencies = userPkg.devDependencies || {};
-      for (const [dep, ver] of Object.entries(tempPkg.devDependencies)) {
-        if (!userPkg.devDependencies[dep]) {
-          userPkg.devDependencies[dep] = ver;
-          depsMerged = true;
-          console.log(chalk.dim(`  ✔ Added devDependency: ${dep}`));
+      
+      if (tempPkg.devDependencies) {
+        userPkg.devDependencies = userPkg.devDependencies || {};
+        for (const [dep, ver] of Object.entries(tempPkg.devDependencies)) {
+          if (!userPkg.devDependencies[dep]) {
+            userPkg.devDependencies[dep] = ver;
+            depsMerged = true;
+            console.log(chalk.dim(`  ✔ Added devDependency: ${dep}`));
+          }
         }
       }
+      
+      if (depsMerged) {
+        fs.writeFileSync(userPkgPath, JSON.stringify(userPkg, null, 2) + '\n');
+      }
     }
-    
-    if (depsMerged) {
-      fs.writeFileSync(userPkgPath, JSON.stringify(userPkg, null, 2) + '\n');
-    }
-  }
 
-  console.log('');
-  console.log(chalk.bold.green('  🚀 Successfully updated DSA Lab core scripts!'));
-  if (depsMerged) {
-    console.log(chalk.yellow('  ⚠ New dependencies were added. Please run:'));
-    console.log(`     ${chalk.cyan('npm install')}`);
+    console.log('');
+    console.log(chalk.bold.green('  🚀 Successfully updated DSA Lab core scripts!'));
+    if (depsMerged) {
+      console.log(chalk.yellow('  ⚠ New dependencies were added. Please run:'));
+      console.log(`     ${chalk.cyan('npm install')}`);
+    }
+    console.log(chalk.dim('  💡 Tip: .bak files were created for overwritten files. You can safely delete them.'));
+    console.log('');
+  } else {
+    console.log('');
+    console.log(chalk.bold.yellow('  🔍 Dry run complete — no files were modified.'));
+    console.log(chalk.dim('  Run without --dry-run to apply changes.'));
+    console.log('');
   }
-  console.log('');
 }
