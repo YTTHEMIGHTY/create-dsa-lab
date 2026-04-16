@@ -1,4 +1,4 @@
-// @version 1.2.0
+// @version 1.2.1
 /**
  * ─── DSA Lab — Unified Dashboard ──────────────────────────────
  *
@@ -248,7 +248,7 @@ function testProblem(problem: ProblemFile): void {
   console.log(chalk.dim(`\n  ─── Testing ${problem.name} ────────────────────────\n`));
   try {
     execSync(
-      `npx jest --testPathPattern="${problem.name}" --verbose --no-coverage`,
+      `node --experimental-vm-modules node_modules/.bin/jest --testPathPatterns="${problem.name}" --verbose --no-coverage`,
       { stdio: 'inherit', cwd: process.cwd() }
     );
   } catch {

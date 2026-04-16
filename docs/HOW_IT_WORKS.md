@@ -87,7 +87,7 @@ npm start
            ├──── Run ──────→ Dynamic import → execute fn(sampleInput)
            │                  → show output, time, pass/fail
            │
-           ├──── Test ─────→ execSync('npx jest --testPathPattern=...')
+           ├──── Test ─────→ execSync('node --experimental-vm-modules ... jest --testPathPatterns=...')
            │
            ├──── Bench ────→ Warm-up(5) → Measure(N iterations)
            │                  → avg/min/max time + memory delta

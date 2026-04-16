@@ -69,7 +69,7 @@ Everything in this directory becomes the user's project. Edit these files to cha
 | `pickProblem()` | Autocomplete file picker with fuzzy search |
 | `pickAction()` | Select menu: Run, Test, Benchmark, Notes, Back, Exit |
 | `runProblem()` | Dynamic import → execute with `sampleInput` → show result |
-| `testProblem()` | Shells out to `npx jest --testPathPattern=<name>` |
+| `testProblem()` | Shells out to `node --experimental-vm-modules ... jest --testPathPatterns=<name>` |
 | `benchProblem()` | Warm-up (5 runs) + N measured iterations → stats table |
 | `openNotes()` | Opens browser to notes server URL |
 | `watchAndRerun()` | Uses chokidar to watch `.ts` file, re-runs action on change |
@@ -201,7 +201,7 @@ Key scripts:
 |:--|:--|
 | `start` | `tsx scripts/dashboard.ts` |
 | `make` | `tsx scripts/generate.ts` |
-| `test` | `npx jest` |
+| `test` | `node --experimental-vm-modules node_modules/.bin/jest --watchAll` |
 | `notes` | `tsx scripts/serve-notes.ts` |
 
 ---
