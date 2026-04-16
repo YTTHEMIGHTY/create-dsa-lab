@@ -1,6 +1,6 @@
 {
   "name": "create-dsa-lab",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Scaffold a zero-config, test-driven DSA laboratory in seconds",
   "bin": {
     "create-dsa-lab": "./bin/cli.js"
