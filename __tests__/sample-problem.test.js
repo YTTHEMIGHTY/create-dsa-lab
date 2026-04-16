@@ -63,4 +63,44 @@ describe('Bundled Sample Problem', () => {
       expect(content).toContain('// @version');
     }
   });
+
+  test('no unicode escape sequences in template files', () => {
+    const textExtensions = ['.ts', '.html', '.json', '.css', '.js', '.md'];
+
+    function walkDir(dir) {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const files = [];
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.name === 'node_modules' || entry.name.startsWith('.')) continue;
+        if (entry.isDirectory()) {
+          files.push(...walkDir(fullPath));
+        } else if (textExtensions.some(ext => entry.name.endsWith(ext))) {
+          files.push(fullPath);
+        }
+      }
+      return files;
+    }
+
+    const files = walkDir(TEMPLATE_DIR);
+    const unicodeEscapePattern = /\\u[0-9a-fA-F]{4}/;
+
+    for (const filePath of files) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const relativePath = path.relative(TEMPLATE_DIR, filePath);
+      expect(unicodeEscapePattern.test(content)).toBe(false);
+    }
+  });
+
+  test('dashboard jest command uses --experimental-vm-modules and --testPathPatterns', () => {
+    const dashboardPath = path.join(TEMPLATE_DIR, 'scripts', 'dashboard.ts');
+    const content = fs.readFileSync(dashboardPath, 'utf-8');
+
+    // Must use --experimental-vm-modules for ESM support
+    expect(content).toContain('--experimental-vm-modules');
+
+    // Must use --testPathPatterns (plural) — Jest 30 removed the singular form
+    expect(content).toContain('--testPathPatterns');
+    expect(content).not.toMatch(/--testPathPattern[^s]/);
+  });
 });
