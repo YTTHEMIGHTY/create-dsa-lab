@@ -111,38 +111,36 @@ async function pickProblem(problems: ProblemFile[]): Promise<ProblemFile | null>
     grouped.set(p.categoryLabel, group);
   }
 
-  const choices: { title: string; value: number; description?: string }[] = [];
-  let idx = 0;
+  const choices: { title: string; value: string; description?: string }[] = [];
   for (const [label, group] of grouped) {
-    choices.push({ title: chalk.bold(`${label} (${group.length})`), value: -1, description: '' });
+    choices.push({ title: chalk.bold(`${label} (${group.length})`), value: '', description: '' });
     for (const p of group) {
       choices.push({
-        title: `  ${p.name}`,
-        value: idx,
-        description: p.hasTest ? chalk.green('✓ test') : chalk.dim('no test'),
+        title: p.hasTest 
+          ? `  ${p.name} ${chalk.dim('—')} ${chalk.green('✓ test')}`
+          : `  ${p.name} ${chalk.dim('— no test')}`,
+        value: p.relativePath,
       });
-      idx++;
     }
   }
 
-  const flatProblems = [...problems];
-  const filteredChoices = choices.filter(c => c.value !== -1);
+  const filteredChoices = choices.filter(c => c.value !== '');
 
   const res = await prompts({
     type: 'autocomplete',
-    name: 'index',
+    name: 'problemId',
     message: 'Select a problem:',
     choices: filteredChoices,
     suggest: (input: string, choices: prompts.Choice[]) => {
       const lower = input.toLowerCase();
       return Promise.resolve(
-        choices.filter((c) => c.title.toLowerCase().includes(lower))
+        choices.filter((c) => c.value.toLowerCase().includes(lower))
       );
     },
   }, { onCancel: () => process.exit(0) });
 
-  if (res.index === undefined) return null;
-  return flatProblems[res.index];
+  if (!res.problemId) return null;
+  return problems.find(p => p.relativePath === res.problemId) || null;
 }
 
 // ─── Action Picker ────────────────────────────────────────────

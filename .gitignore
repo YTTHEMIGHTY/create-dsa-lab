@@ -4,3 +4,4 @@ coverage/
 _smoke_test/
 *.tgz
 .DS_Store
+extras/

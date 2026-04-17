@@ -14,8 +14,9 @@ import prompts from 'prompts';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { execSync, exec } from 'child_process';
 import { fileURLToPath } from 'url';
+import { promisify } from 'util';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -136,12 +137,21 @@ async function run(projectName) {
 
   console.log(chalk.green(`  ✔ Created project at ./${projectName}`));
 
-  console.log(chalk.dim('  Installing dependencies...'));
+  const frames = ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'];
+  let i = 0;
+  const execAsync = promisify(exec);
+  
+  const spinner = setInterval(() => {
+    process.stdout.write(`\r  ${chalk.cyan(frames[i++ % frames.length])} ${chalk.dim('Installing dependencies...')}`);
+  }, 80);
+
   try {
-    execSync('npm install', { cwd: targetDir, stdio: 'pipe' });
-    console.log(chalk.green('  ✔ Dependencies installed'));
+    await execAsync('npm install', { cwd: targetDir });
+    clearInterval(spinner);
+    process.stdout.write(`\r  ${chalk.green('✔ Dependencies installed')}                                    \n`);
   } catch {
-    console.warn(chalk.yellow('  ⚠ Failed to install dependencies automatically.'));
+    clearInterval(spinner);
+    process.stdout.write(`\r  ${chalk.yellow('⚠ Failed to install dependencies')}                             \n`);
     console.warn(chalk.dim(`    → Run "cd ${projectName} && npm install" manually.`));
   }
 
