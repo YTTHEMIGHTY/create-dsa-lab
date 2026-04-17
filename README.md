@@ -33,32 +33,9 @@ npm start
 
 ## 🎬 See It In Action
 
-```
-$ npm start
-
-  ╔══════════════════════════════════════════════╗
-  ║   🧪 DSA Lab — Dashboard                     ║
-  ║   Watching for changes...                     ║
-  ╚══════════════════════════════════════════════╝
-
-  ? Select a problem:
-    🏆 LeetCode (1)
-    ❯   containerWithMostWater_11              ✓ test
-
-  ? Action for containerWithMostWater_11:
-    ❯ ▶️  Run          — Execute with sample data
-      🧪 Test         — Run 5 Jest tests
-      📊 Benchmark    — Measure performance
-      📝 View Notes   — Open in browser
-
-  ──────────────────────────────────────────────
-  ✔ Result: 49
-  ✔ Expected: 49                         PASS ✅
-  ⏱  Time: 0.012ms
-  ──────────────────────────────────────────────
-
-  👀 Watching for changes... (Enter → back to menu)
-```
+<p align="center">
+  <img src="demo.gif" alt="DSA Lab Interactive Demo" width="900" style="border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2)"/>
+</p>
 
 **Edit your file → dashboard auto-re-runs.** No switching windows, no re-typing commands.
 

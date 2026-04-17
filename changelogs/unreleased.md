@@ -1,5 +1,6 @@
 ### ✨ Features
-- 
+- Added a non-blocking asynchronous animated loading spinner to `bin/cli.js` to provide creative visual feedback during dependency installations.
 
 ### 🐞 Bug Fixes
-- 
+- Resolved an infinite loop bug in `dashboard.ts` affecting menu choices that defaulted to `0` value properties. Identifiers now safely use `.relativePath`.
+- Fixed dashboard formatting issues where the test label (`✓ test`) would staircase and wrap ungracefully onto bottom lines across narrower terminals. 
